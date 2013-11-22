@@ -1,0 +1,17 @@
+{
+  "name": "event_emitter",
+  "version": "1.0.0",
+  "description": "event_emitter is a faster version of node's default EventEmitter",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lonewolfgames/event_emitter.git"
+  },
+  "main": "./src/index.js",
+  "author": "Nathan Faucett",
+  "license": "BSD",
+  "keywords": [
+    "event_emitter.js",
+    "event_emitter"
+  ],
+  "readmeFilename": "README.md"
+}
