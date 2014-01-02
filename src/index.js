@@ -128,4 +128,16 @@ EventEmitter.prototype.emit = EventEmitter.prototype.trigger = function(type) {
 };
 
 
+EventEmitter.extend = function(child, parent) {
+	if (!parent) parent = this;
+
+	child.prototype = Object.create(parent.prototype);
+	child.prototype.constructor = child;
+
+	if (parent.prototype._onExtend) parent.prototype._onExtend(child);
+	if (child.prototype._onInherit) child.prototype._onInherit(parent);
+	child.extend = this.extend;
+};
+
+
 module.exports = EventEmitter;
