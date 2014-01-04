@@ -36,7 +36,7 @@ EventEmitter.prototype.once = EventEmitter.prototype.addEventListenerOnce = func
 
 
 EventEmitter.prototype.listenTo = EventEmitter.prototype.addEventListenerTo = function(obj, type, listener, ctx) {
-	if (!(obj instanceof EventEmitter)) throw "Can't listen to Object, it's not a instance of EventEmitter";
+	if (!obj.on || !obj.addEventListenerTo) throw "Can't listen to Object, it's not a instance of EventEmitter";
 	
 	obj.on(type, listener, ctx || this);
 	
