@@ -134,8 +134,6 @@ EventEmitter.extend = function(child, parent) {
 	child.prototype = Object.create(parent.prototype);
 	child.prototype.constructor = child;
 
-	if (parent.prototype._onExtend) parent.prototype._onExtend(child);
-	if (child.prototype._onInherit) child.prototype._onInherit(parent);
 	child.extend = this.extend;
 };
 
