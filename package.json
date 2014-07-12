@@ -12,7 +12,8 @@
   "keywords": [
     "event_emitter.js",
     "event_emitter",
-    "EventEmitter"
+    "EventEmitter",
+    "events"
   ],
   "readmeFilename": "README.md"
 }
