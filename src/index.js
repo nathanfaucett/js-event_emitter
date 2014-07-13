@@ -1,5 +1,5 @@
 var shift = Array.prototype.shift,
-	has = Object.prototype.hasOwnProperty;
+    has = Object.prototype.hasOwnProperty;
 
 
 function EventObject(listener, ctx) {
@@ -62,7 +62,7 @@ EventEmitter.prototype.once = function(type, listener, ctx) {
 
 EventEmitter.prototype.listenTo = function(obj, type, listener, ctx) {
     if (!(has.call(obj, "on") && typeof(obj.on) === "function")) {
-		throw new TypeError("EventEmitter.listenTo(obj, type, listener, ctx) obj must extend EventEmitter");
+        throw new TypeError("EventEmitter.listenTo(obj, type, listener, ctx) obj must extend EventEmitter");
     }
 
     obj.on(type, listener, ctx || this);
