@@ -1,19 +1,22 @@
 {
   "name": "event_emitter",
-  "version": "1.0.0",
-  "description": "EventEmitter is a faster version of node's default EventEmitter",
+  "version": "0.0.1",
+  "description": "EventEmitter for the browser and node.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/nathanfaucett/event_emitter.git"
   },
-  "main": "./src/index.js",
-  "author": "Nathan Faucett",
-  "license": "BSD",
+  "main": "src/index.js",
   "keywords": [
-    "event_emitter.js",
     "event_emitter",
-    "EventEmitter",
-    "events"
+    "event_emitter.js"
   ],
-  "readmeFilename": "README.md"
+  "author": "Nathan Faucett",
+  "license": "BSD-2-Clause",
+  "readmeFilename": "README.md",
+  "devDependencies": {
+    "grunt": "",
+    "grunt-jsbeautifier": ""
+  }
 }
+

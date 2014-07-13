@@ -1,0 +1,20 @@
+{
+  "name": "event_emitter",
+  "version": "0.0.1",
+  "homepage": "https://github.com/nathanfaucett/event_emitter",
+  "authors": [
+    "nathanfaucett <nathanfaucett@gmail.com>"
+  ],
+  "description": "EventEmitter for the browser and node.js",
+  "main": "src/index.js",
+  "keywords": [
+    "event_emitter",
+    "event_emitter.js"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ]
+}
