@@ -17,6 +17,7 @@ function EventEmitter() {
 EventEmitter.defaultMaxListeners = 10;
 
 EventEmitter.prototype.on = function(type, listener, ctx) {
+    if (typeof(listener) !== "function") throw new TypeError("EventEmitter.on(type, listener[, ctx]) listener must be a function");
     var events = this._events,
         event = (events[type] || (events[type] = [])),
         maxListeners = this._maxListeners;
@@ -71,6 +72,7 @@ EventEmitter.prototype.listenTo = function(obj, type, listener, ctx) {
 };
 
 EventEmitter.prototype.off = function(type, listener, ctx) {
+    if (typeof(listener) !== "function") throw new TypeError("EventEmitter.on(type, listener[, ctx]) listener must be a function");
     var thisEvents = this._events,
         events, event,
         i;
@@ -172,6 +174,8 @@ EventEmitter.prototype.emit = function(type) {
 };
 
 EventEmitter.prototype.setMaxListeners = function(count) {
+    if (typeof(count) !== "number") throw new TypeError("EventEmitter.setMaxListeners(count) count must be a number");
+
     this._maxListeners = count;
     return this;
 };
@@ -183,6 +187,7 @@ EventEmitter.extend = function(child, parent) {
     child.prototype.constructor = child;
     child.prototype._super = parent.prototype;
     child.extend = parent.extend;
+    child._super = parent;
 
     return child;
 };
