@@ -173,11 +173,11 @@ EventEmitter.prototype.emit = function(type) {
     return this;
 };
 
-EventEmitter.prototype.setMaxListeners = function(count) {
-    if (typeof(count) !== "number") throw new TypeError("EventEmitter.setMaxListeners(count) count must be a number");
+EventEmitter.prototype.listeners = function(type) {
+    if (typeof(type) !== "string") throw new TypeError("EventEmitter.listeners(type) type must be a string");
+    var events = this._events[type];
 
-    this._maxListeners = count;
-    return this;
+    return events ? events.length : 0;
 };
 
 EventEmitter.extend = function(child, parent) {
