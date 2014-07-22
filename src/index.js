@@ -19,12 +19,12 @@ EventEmitter.defaultMaxListeners = 10;
 EventEmitter.prototype.on = function(type, listener, ctx) {
     if (typeof(listener) !== "function") throw new TypeError("EventEmitter.on(type, listener[, ctx]) listener must be a function");
     var events = this._events,
-        event = (events[type] || (events[type] = [])),
+        eventList = (events[type] || (events[type] = [])),
         maxListeners = this._maxListeners;
 
-    event.push(new EventObject(listener, ctx || this));
+    eventList.push(new EventObject(listener, ctx || this));
 
-    if (maxListeners !== -1 && event.length > maxListeners) {
+    if (maxListeners !== -1 && eventList.length > maxListeners) {
         console.error("EventEmitter.on(type, listener, ctx) possible EventEmitter memory leak detected. " + maxListeners + " listeners added");
     }
 
@@ -63,7 +63,7 @@ EventEmitter.prototype.once = function(type, listener, ctx) {
 
 EventEmitter.prototype.listenTo = function(obj, type, listener, ctx) {
     if (!(has.call(obj, "on") && typeof(obj.on) === "function")) {
-        throw new TypeError("EventEmitter.listenTo(obj, type, listener, ctx) obj must extend EventEmitter");
+        throw new TypeError("EventEmitter.listenTo(obj, type, listener, ctx) obj must have a on function taking (type, listener[, ctx])");
     }
 
     obj.on(type, listener, ctx || this);
@@ -71,36 +71,32 @@ EventEmitter.prototype.listenTo = function(obj, type, listener, ctx) {
 };
 
 EventEmitter.prototype.off = function(type, listener, ctx) {
-    if (typeof(listener) !== "function") throw new TypeError("EventEmitter.on(type, listener, ctx) listener must be a function");
-    var thisEvents = this._events,
-        events, event,
-        i;
+    var events = this._events,
+        eventList, event, i, il;
 
-    if (!type) {
-        for (var key in thisEvents) {
-            if ((events = thisEvents[key])) events.length = 0;
-        }
+    if (!type) return this.removeAllListeners();
 
-        return this;
-    }
-
-    events = thisEvents[type];
-    if (!events) return this;
+    eventList = events[type];
+    if (!eventList) return this;
 
     if (!listener) {
-        events.length = 0;
+        for (i = 0, il = eventList.length; i < il; i++) {
+            event = eventList[i];
+            this.emit("removeListener", type, event.listener, event.ctx);
+        }
+        eventList.length = 0;
+        delete events[type];
     } else {
         ctx = ctx || this;
-        i = events.length;
+        for (i = 0, il = eventList.length; i < il; i++) {
+            event = eventList[i];
 
-        while (i--) {
-            event = events[i];
-
-            if (event.listener === listener && event.ctx === ctx) {
-                events.splice(i, 1);
-                break;
+            if (event.listener === listener) {
+                this.emit("removeListener", type, event.listener, event.ctx);
+                eventList.splice(i, 1);
             }
         }
+        if (eventList.length === 0) delete events[type];
     }
 
     return this;
@@ -110,62 +106,71 @@ EventEmitter.prototype.removeListener = EventEmitter.prototype.off;
 
 EventEmitter.prototype.removeAllListeners = function() {
     var events = this._events,
-        event;
+        eventList, event, i, il;
 
     for (var key in events) {
-        if ((event = events[key])) event.length = 0;
+        if ((eventList = events[key])) {
+            for (i = 0, il = eventList.length; i < il; i++) {
+                event = eventList[i];
+                this.emit("removeListener", type, event.listener, event.ctx);
+            }
+            eventList.length = 0;
+            delete events[key];
+        }
     }
+
+    return this;
 };
 
 EventEmitter.prototype.emit = function(type) {
-    var events = this._events[type],
+    var eventList = this._events[type],
         a1, a2, a3, a4,
         length, event,
         i;
 
-    if (!events || !events.length) return this;
+    if (!eventList || !eventList.length) return this;
     length = arguments.length;
 
     if (length === 1) {
-        i = events.length;
+        i = eventList.length;
         while (i--) {
-            if ((event = events[i])) event.listener.call(event.ctx);
+            if ((event = eventList[i])) event.listener.call(event.ctx);
         }
     } else if (length === 2) {
         a1 = arguments[1];
-        i = events.length;
+        i = eventList.length;
         while (i--) {
-            if ((event = events[i])) event.listener.call(event.ctx, a1);
+            if ((event = eventList[i])) event.listener.call(event.ctx, a1);
         }
     } else if (length === 3) {
         a1 = arguments[1];
         a2 = arguments[2];
-        i = events.length;
+        i = eventList.length;
         while (i--) {
-            if ((event = events[i])) event.listener.call(event.ctx, a1, a2);
+            if ((event = eventList[i])) event.listener.call(event.ctx, a1, a2);
         }
     } else if (length === 4) {
         a1 = arguments[1];
         a2 = arguments[2];
         a3 = arguments[3];
-        i = events.length;
+        i = eventList.length;
         while (i--) {
-            if ((event = events[i])) event.listener.call(event.ctx, a1, a2, a3);
+            if ((event = eventList[i])) event.listener.call(event.ctx, a1, a2, a3);
         }
     } else if (length === 5) {
         a1 = arguments[1];
         a2 = arguments[2];
         a3 = arguments[3];
         a4 = arguments[4];
-        i = events.length;
+        i = eventList.length;
         while (i--) {
-            if ((event = events[i])) event.listener.call(event.ctx, a1, a2, a3, a4);
+            if ((event = eventList[i])) event.listener.call(event.ctx, a1, a2, a3, a4);
         }
     } else {
         shift.apply(arguments);
-        i = events.length;
+        i = eventList.length;
         while (i--) {
-            if ((event = events[i])) event.listener.apply(event.ctx, arguments);
+            if ((event = eventList[i])) event.listener.apply(event.ctx, arguments);
         }
     }
 
@@ -174,9 +179,9 @@ EventEmitter.prototype.emit = function(type) {
 
 EventEmitter.prototype.listeners = function(type) {
     if (typeof(type) !== "string") throw new TypeError("EventEmitter.listeners(type) must be a string");
-    var events = this._events[type];
+    var eventList = this._events[type];
 
-    return events ? events.length : 0;
+    return eventList ? eventList.length : 0;
 };
 
 EventEmitter.prototype.setMaxListeners = function(value) {
