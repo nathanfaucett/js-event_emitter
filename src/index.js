@@ -71,7 +71,7 @@ EventEmitter.prototype.listenTo = function(obj, type, listener, ctx) {
 };
 
 EventEmitter.prototype.off = function(type, listener, ctx) {
-    if (typeof(listener) !== "function") throw new TypeError("EventEmitter.on(type, listener[, ctx]) listener must be a function");
+    if (typeof(listener) !== "function") throw new TypeError("EventEmitter.on(type, listener, ctx) listener must be a function");
     var thisEvents = this._events,
         events, event,
         i;
@@ -113,7 +113,7 @@ EventEmitter.prototype.removeAllListeners = function() {
         event;
 
     for (var key in events) {
-        if ((event = events[i])) event.length = 0;
+        if ((event = events[key])) event.length = 0;
     }
 };
 
@@ -129,20 +129,20 @@ EventEmitter.prototype.emit = function(type) {
     if (length === 1) {
         i = events.length;
         while (i--) {
-            (event = events[i]).listener.call(event.ctx);
+            if ((event = events[i])) event.listener.call(event.ctx);
         }
     } else if (length === 2) {
         a1 = arguments[1];
         i = events.length;
         while (i--) {
-            (event = events[i]).listener.call(event.ctx, a1);
+            if ((event = events[i])) event.listener.call(event.ctx, a1);
         }
     } else if (length === 3) {
         a1 = arguments[1];
         a2 = arguments[2];
         i = events.length;
         while (i--) {
-            (event = events[i]).listener.call(event.ctx, a1, a2);
+            if ((event = events[i])) event.listener.call(event.ctx, a1, a2);
         }
     } else if (length === 4) {
         a1 = arguments[1];
@@ -150,7 +150,7 @@ EventEmitter.prototype.emit = function(type) {
         a3 = arguments[3];
         i = events.length;
         while (i--) {
-            (event = events[i]).listener.call(event.ctx, a1, a2, a3);
+            if ((event = events[i])) event.listener.call(event.ctx, a1, a2, a3);
         }
     } else if (length === 5) {
         a1 = arguments[1];
@@ -159,13 +159,13 @@ EventEmitter.prototype.emit = function(type) {
         a4 = arguments[4];
         i = events.length;
         while (i--) {
-            (event = events[i]).listener.call(event.ctx, a1, a2, a3, a4);
+            if ((event = events[i])) event.listener.call(event.ctx, a1, a2, a3, a4);
         }
     } else {
         shift.apply(arguments);
         i = events.length;
         while (i--) {
-            (event = events[i]).listener.apply(event.ctx, arguments);
+            if ((event = events[i])) event.listener.apply(event.ctx, arguments);
         }
     }
 
