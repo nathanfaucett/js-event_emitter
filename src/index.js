@@ -67,7 +67,6 @@ EventEmitter.prototype.listenTo = function(obj, type, listener, ctx) {
     }
 
     obj.on(type, listener, ctx || this);
-
     return this;
 };
 
@@ -174,10 +173,17 @@ EventEmitter.prototype.emit = function(type) {
 };
 
 EventEmitter.prototype.listeners = function(type) {
-    if (typeof(type) !== "string") throw new TypeError("EventEmitter.listeners(type) type must be a string");
+    if (typeof(type) !== "string") throw new TypeError("EventEmitter.listeners(type) must be a string");
     var events = this._events[type];
 
     return events ? events.length : 0;
+};
+
+EventEmitter.prototype.setMaxListeners = function(value) {
+    if ((value = +value) !== value) throw new TypeError("EventEmitter.setMaxListeners(value) must be a number");
+
+    this._maxListeners = value < 0 ? -1 : value;
+    return this;
 };
 
 EventEmitter.extend = function(child, parent) {
