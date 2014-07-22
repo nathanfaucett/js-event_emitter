@@ -14,8 +14,6 @@ function EventEmitter() {
     this._maxListeners = EventEmitter.defaultMaxListeners;
 }
 
-EventEmitter.defaultMaxListeners = 10;
-
 EventEmitter.prototype.on = function(type, listener, ctx) {
     if (typeof(listener) !== "function") throw new TypeError("EventEmitter.on(type, listener[, ctx]) listener must be a function");
     var events = this._events,
@@ -181,17 +179,46 @@ EventEmitter.prototype.emit = function(type) {
 };
 
 EventEmitter.prototype.listeners = function(type) {
-    if (typeof(type) !== "string") throw new TypeError("EventEmitter.listeners(type) must be a string");
+    var eventList = this._events[type];
+
+    return eventList ? eventList.slice() : [];
+};
+
+EventEmitter.prototype.listenerCount = function(type) {
     var eventList = this._events[type];
 
     return eventList ? eventList.length : 0;
 };
 
 EventEmitter.prototype.setMaxListeners = function(value) {
-    if ((value = +value) !== value) throw new TypeError("EventEmitter.setMaxListeners(value) must be a number");
+    if ((value = +value) !== value) throw new TypeError("EventEmitter.setMaxListeners(value) value must be a number");
 
     this._maxListeners = value < 0 ? -1 : value;
     return this;
+};
+
+
+EventEmitter.defaultMaxListeners = 10;
+
+EventEmitter.listeners = function(obj, type) {
+    if (obj == null) throw new TypeError("EventEmitter.listeners(obj, type) obj required");
+    var eventList = obj._events && obj._events[type];
+
+    return eventList ? eventList.slice() : [];
+};
+
+EventEmitter.listenerCount = function(obj, type) {
+    if (obj == null) throw new TypeError("EventEmitter.listenerCount(obj, type) obj required");
+    var eventList = obj._events && obj._events[type];
+
+    return eventList ? eventList.length : 0;
+};
+
+EventEmitter.setMaxListeners = function(value) {
+    if ((value = +value) !== value) throw new TypeError("EventEmitter.setMaxListeners(value) value must be a number");
+
+    EventEmitter.defaultMaxListeners = value < 0 ? -1 : value;
+    return value;
 };
 
 EventEmitter.extend = function(child, parent) {
