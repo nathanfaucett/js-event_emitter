@@ -72,7 +72,7 @@ EventEmitter.prototype.listenTo = function(obj, type, listener, ctx) {
 
 EventEmitter.prototype.off = function(type, listener, ctx) {
     var events = this._events,
-        eventList, event, i, il;
+        eventList, event, i;
 
     if (!type) return this.removeAllListeners();
 
@@ -80,7 +80,8 @@ EventEmitter.prototype.off = function(type, listener, ctx) {
     if (!eventList) return this;
 
     if (!listener) {
-        for (i = 0, il = eventList.length; i < il; i++) {
+        i = eventList.length;
+        while (i--) {
             event = eventList[i];
             this.emit("removeListener", type, event.listener, event.ctx);
         }
@@ -88,7 +89,8 @@ EventEmitter.prototype.off = function(type, listener, ctx) {
         delete events[type];
     } else {
         ctx = ctx || this;
-        for (i = 0, il = eventList.length; i < il; i++) {
+        i = eventList.length;
+        while (i--) {
             event = eventList[i];
 
             if (event.listener === listener) {
@@ -106,11 +108,12 @@ EventEmitter.prototype.removeListener = EventEmitter.prototype.off;
 
 EventEmitter.prototype.removeAllListeners = function() {
     var events = this._events,
-        eventList, event, i, il;
+        eventList, event, i;
 
     for (var key in events) {
         if ((eventList = events[key])) {
-            for (i = 0, il = eventList.length; i < il; i++) {
+            i = eventList.length;
+            while (i--) {
                 event = eventList[i];
                 this.emit("removeListener", type, event.listener, event.ctx);
             }
