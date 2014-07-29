@@ -10,7 +10,7 @@ function EventObject(listener, ctx) {
 
 function EventEmitter() {
 
-    this._events = {};
+    this._events = Object.create(null);
     this._maxListeners = EventEmitter.defaultMaxListeners;
 }
 
