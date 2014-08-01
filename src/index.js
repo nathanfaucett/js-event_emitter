@@ -108,15 +108,15 @@ EventEmitter.prototype.removeAllListeners = function() {
     var events = this._events,
         eventList, event, i;
 
-    for (var key in events) {
-        if ((eventList = events[key])) {
+    for (var type in events) {
+        if ((eventList = events[type])) {
             i = eventList.length;
             while (i--) {
                 event = eventList[i];
                 this.emit("removeListener", type, event.listener, event.ctx);
             }
             eventList.length = 0;
-            delete events[key];
+            delete events[type];
         }
     }
 
