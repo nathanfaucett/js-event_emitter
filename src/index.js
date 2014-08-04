@@ -226,9 +226,7 @@ EventEmitter.extend = function(child, parent) {
 
     child.prototype = Object.create(parent.prototype);
     child.prototype.constructor = child;
-    child.prototype._super = parent.prototype;
     child.extend = parent.extend;
-    child._super = parent;
 
     return child;
 };
