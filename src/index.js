@@ -1,5 +1,5 @@
-var shift = Array.prototype.shift,
-    has = Object.prototype.hasOwnProperty;
+var arrayShift = Array.prototype.shift,
+    hasOwnProperty = Object.prototype.hasOwnProperty;
 
 
 function EventObject(listener, ctx) {
@@ -60,7 +60,7 @@ EventEmitter.prototype.once = function(type, listener, ctx) {
 };
 
 EventEmitter.prototype.listenTo = function(obj, type, listener, ctx) {
-    if (!(has.call(obj, "on") && typeof(obj.on) === "function")) {
+    if (!(hasOwnProperty.call(obj, "on") && typeof(obj.on) === "function")) {
         throw new TypeError("EventEmitter.listenTo(obj, type, listener, ctx) obj must have a on function taking (type, listener[, ctx])");
     }
 
@@ -106,9 +106,9 @@ EventEmitter.prototype.removeListener = EventEmitter.prototype.off;
 
 EventEmitter.prototype.removeAllListeners = function() {
     var events = this._events,
-        eventList, event, i;
+        eventList, event, i, type;
 
-    for (var type in events) {
+    for (type in events) {
         if ((eventList = events[type])) {
             i = eventList.length;
             while (i--) {
@@ -123,14 +123,10 @@ EventEmitter.prototype.removeAllListeners = function() {
     return this;
 };
 
-EventEmitter.prototype.emit = function(type) {
-    var eventList = this._events[type],
-        a1, a2, a3, a4,
-        length, event,
-        i;
-
-    if (!eventList || !eventList.length) return this;
-    length = arguments.length;
+function emit(eventList, args) {
+    var a1, a2, a3, a4,
+        length = args.length,
+        event, i;
 
     if (length === 1) {
         i = eventList.length;
@@ -138,42 +134,49 @@ EventEmitter.prototype.emit = function(type) {
             if ((event = eventList[i])) event.listener.call(event.ctx);
         }
     } else if (length === 2) {
-        a1 = arguments[1];
+        a1 = args[1];
         i = eventList.length;
         while (i--) {
             if ((event = eventList[i])) event.listener.call(event.ctx, a1);
         }
     } else if (length === 3) {
-        a1 = arguments[1];
-        a2 = arguments[2];
+        a1 = args[1];
+        a2 = args[2];
         i = eventList.length;
         while (i--) {
             if ((event = eventList[i])) event.listener.call(event.ctx, a1, a2);
         }
     } else if (length === 4) {
-        a1 = arguments[1];
-        a2 = arguments[2];
-        a3 = arguments[3];
+        a1 = args[1];
+        a2 = args[2];
+        a3 = args[3];
         i = eventList.length;
         while (i--) {
             if ((event = eventList[i])) event.listener.call(event.ctx, a1, a2, a3);
         }
     } else if (length === 5) {
-        a1 = arguments[1];
-        a2 = arguments[2];
-        a3 = arguments[3];
-        a4 = arguments[4];
+        a1 = args[1];
+        a2 = args[2];
+        a3 = args[3];
+        a4 = args[4];
         i = eventList.length;
         while (i--) {
             if ((event = eventList[i])) event.listener.call(event.ctx, a1, a2, a3, a4);
         }
     } else {
-        shift.apply(arguments);
+        arrayShift.apply(args);
         i = eventList.length;
         while (i--) {
-            if ((event = eventList[i])) event.listener.apply(event.ctx, arguments);
+            if ((event = eventList[i])) event.listener.apply(event.ctx, args);
         }
     }
+}
+
+EventEmitter.prototype.emit = function(type) {
+    var eventList = this._events[type];
+
+    if (!eventList || !eventList.length) return this;
+    emit(eventList, arguments);
 
     return this;
 };
@@ -226,6 +229,7 @@ EventEmitter.extend = function(child, parent) {
 
     child.prototype = Object.create(parent.prototype);
     child.prototype.constructor = child;
+    child._super = parent.prototype;
     child.extend = parent.extend;
 
     return child;
