@@ -125,48 +125,44 @@ EventEmitter.prototype.removeAllListeners = function() {
 
 function emit(eventList, args) {
     var a1, a2, a3, a4,
-        length = args.length,
-        event, i;
+        argLength = args.length,
+        length = argLength,
+        i = -1,
+        event;
 
-    if (length === 1) {
-        i = eventList.length;
-        while (i--) {
+    if (argLength === 1) {
+        while (++i < length) {
             if ((event = eventList[i])) event.listener.call(event.ctx);
         }
-    } else if (length === 2) {
+    } else if (argLength === 2) {
         a1 = args[1];
-        i = eventList.length;
-        while (i--) {
+        while (++i < length) {
             if ((event = eventList[i])) event.listener.call(event.ctx, a1);
         }
-    } else if (length === 3) {
+    } else if (argLength === 3) {
         a1 = args[1];
         a2 = args[2];
-        i = eventList.length;
-        while (i--) {
+        while (++i < length) {
             if ((event = eventList[i])) event.listener.call(event.ctx, a1, a2);
         }
-    } else if (length === 4) {
+    } else if (argLength === 4) {
         a1 = args[1];
         a2 = args[2];
         a3 = args[3];
-        i = eventList.length;
-        while (i--) {
+        while (++i < length) {
             if ((event = eventList[i])) event.listener.call(event.ctx, a1, a2, a3);
         }
-    } else if (length === 5) {
+    } else if (argLength === 5) {
         a1 = args[1];
         a2 = args[2];
         a3 = args[3];
         a4 = args[4];
-        i = eventList.length;
-        while (i--) {
+        while (++i < length) {
             if ((event = eventList[i])) event.listener.call(event.ctx, a1, a2, a3, a4);
         }
     } else {
         arrayShift.apply(args);
-        i = eventList.length;
-        while (i--) {
+        while (++i < length) {
             if ((event = eventList[i])) event.listener.apply(event.ctx, args);
         }
     }
