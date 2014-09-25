@@ -15,10 +15,13 @@ function EventEmitter() {
 }
 
 EventEmitter.prototype.on = function(type, listener, ctx) {
+    var events, eventList, maxListeners;
+
     if (typeof(listener) !== "function") throw new TypeError("EventEmitter.on(type, listener[, ctx]) listener must be a function");
-    var events = this._events,
-        eventList = (events[type] || (events[type] = [])),
-        maxListeners = this._maxListeners;
+
+    events = this._events;
+    eventList = (events[type] || (events[type] = []));
+    maxListeners = this._maxListeners;
 
     eventList.push(new EventObject(listener, ctx || this));
 
@@ -33,11 +36,13 @@ EventEmitter.prototype.addListener = EventEmitter.prototype.on;
 
 EventEmitter.prototype.once = function(type, listener, ctx) {
     var _this = this;
+
     ctx || (ctx = this);
 
     function once() {
-        _this.off(type, once, ctx);
         var length = arguments.length;
+
+        _this.off(type, once, ctx);
 
         if (length === 0) {
             return listener.call(ctx);
@@ -200,15 +205,19 @@ EventEmitter.prototype.setMaxListeners = function(value) {
 EventEmitter.defaultMaxListeners = 10;
 
 EventEmitter.listeners = function(obj, type) {
+    var eventList;
+
     if (obj == null) throw new TypeError("EventEmitter.listeners(obj, type) obj required");
-    var eventList = obj._events && obj._events[type];
+    eventList = obj._events && obj._events[type];
 
     return eventList ? eventList.slice() : [];
 };
 
 EventEmitter.listenerCount = function(obj, type) {
+    var eventList;
+
     if (obj == null) throw new TypeError("EventEmitter.listenerCount(obj, type) obj required");
-    var eventList = obj._events && obj._events[type];
+    eventList = obj._events && obj._events[type];
 
     return eventList ? eventList.length : 0;
 };
