@@ -1,5 +1,5 @@
 var arrayShift = Array.prototype.shift,
-    hasOwnProperty = Object.prototype.hasOwnProperty;
+    hasOwnProp = Object.prototype.hasOwnProperty;
 
 
 function EventObject(listener, ctx) {
@@ -65,7 +65,7 @@ EventEmitter.prototype.once = function(type, listener, ctx) {
 };
 
 EventEmitter.prototype.listenTo = function(obj, type, listener, ctx) {
-    if (!(hasOwnProperty.call(obj, "on") && typeof(obj.on) === "function")) {
+    if (!(hasOwnProp.call(obj, "on") && typeof(obj.on) === "function")) {
         throw new TypeError("EventEmitter.listenTo(obj, type, listener, ctx) obj must have a on function taking (type, listener[, ctx])");
     }
 
