@@ -233,14 +233,8 @@ EventEmitter.setMaxListeners = function(value) {
 };
 
 EventEmitter.extend = function(child, parent) {
-    if (!parent) parent = this;
 
-    child.prototype = utils.create(parent.prototype);
-    child.prototype.constructor = child;
-    child._super = parent.prototype;
-    child.extend = parent.extend;
-
-    return child;
+    return utils.inherits(child, parent);
 };
 
 
