@@ -232,9 +232,12 @@ EventEmitter.setMaxListeners = function(value) {
     return value;
 };
 
-EventEmitter.extend = function(child, parent) {
+EventEmitter.extend = function(child) {
 
-    return utils.inherits(child, parent);
+    utils.inherits(child, this);
+    child.extend = this.extend;
+
+    return child;
 };
 
 
