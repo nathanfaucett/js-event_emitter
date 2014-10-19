@@ -1,3 +1,6 @@
+var utils = require("utils");
+
+
 var arrayShift = Array.prototype.shift,
     hasOwnProp = Object.prototype.hasOwnProperty;
 
@@ -10,7 +13,7 @@ function EventObject(listener, ctx) {
 
 function EventEmitter() {
 
-    this._events = Object.create(null);
+    this._events = {};
     this._maxListeners = EventEmitter.defaultMaxListeners;
 }
 
@@ -232,7 +235,7 @@ EventEmitter.setMaxListeners = function(value) {
 EventEmitter.extend = function(child, parent) {
     if (!parent) parent = this;
 
-    child.prototype = Object.create(parent.prototype);
+    child.prototype = utils.create(parent.prototype);
     child.prototype.constructor = child;
     child._super = parent.prototype;
     child.extend = parent.extend;
