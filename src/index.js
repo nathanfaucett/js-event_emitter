@@ -194,19 +194,19 @@ function emitAsync(eventList, args, callback) {
 
 EventEmitter.prototype.emitAsync = function(name) {
     var eventList = this._events[name],
-        args, callback;
-
-    if (!eventList || !eventList.length) return this;
-
-    args = arraySlice.call(arguments, 1);
-    callback = args.pop();
+        args = arraySlice.call(arguments, 1),
+        callback = args.pop();
 
     if (!type.isFunction(callback)) {
         throw new TypeError("EventEmitter.emitAsync(name [, ...args], callback) callback must be a function");
     }
 
     process.nextTick(function() {
-        emitAsync(eventList, args, callback);
+        if (!eventList || !eventList.length) {
+            callback();
+        } else {
+            emitAsync(eventList, args, callback);
+        }
     });
 
     return this;
