@@ -169,7 +169,7 @@ EventEmitter.prototype.emit = function(name) {
     return this;
 };
 
-function emitAsync(eventList, args, callback) {
+function emitAsync(_this, eventList, args, callback) {
     var length = eventList.length,
         index = 0,
         argsLength = args.length,
@@ -181,7 +181,7 @@ function emitAsync(eventList, args, callback) {
         }
         if (index === length || err) {
             called = true;
-            callback(err);
+            callback.call(_this, err);
             return;
         }
 
@@ -193,7 +193,8 @@ function emitAsync(eventList, args, callback) {
 }
 
 EventEmitter.prototype.emitAsync = function(name) {
-    var eventList = this._events[name],
+    var _this = this,
+        eventList = this._events[name],
         args = arraySlice.call(arguments, 1),
         callback = args.pop();
 
@@ -203,9 +204,9 @@ EventEmitter.prototype.emitAsync = function(name) {
 
     process.nextTick(function() {
         if (!eventList || !eventList.length) {
-            callback();
+            callback.call(_this);
         } else {
-            emitAsync(eventList, args, callback);
+            emitAsync(_this, eventList, args, callback);
         }
     });
 
