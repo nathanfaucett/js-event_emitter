@@ -205,7 +205,9 @@ EventEmitter.prototype.emitAsync = function(name) {
         throw new TypeError("EventEmitter.emitAsync(name [, ...args], callback) callback must be a function");
     }
 
-    emitAsync(eventList, args, callback);
+    process.nextTick(function() {
+        emitAsync(eventList, args, callback);
+    });
 
     return this;
 };
