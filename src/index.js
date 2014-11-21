@@ -67,7 +67,9 @@ EventEmitter.prototype.once = function(name, listener, ctx) {
         return listener.apply(ctx, arguments);
     }
 
-    return this.on(name, once, ctx);
+    this.on(name, once, ctx);
+
+    return once;
 };
 
 EventEmitter.prototype.listenTo = function(obj, name, listener, ctx) {
@@ -114,6 +116,25 @@ EventEmitter.prototype.off = function(name, listener, ctx) {
 };
 
 EventEmitter.prototype.removeListener = EventEmitter.prototype.off;
+
+EventEmitter.prototype.removeAllListeners = function() {
+    var events = this._events,
+        keys = utils.keys(events),
+        i = -1,
+        length = keys.length,
+        key, event;
+
+    while (i++ < length) {
+        key = keys[i];
+        event = events[key];
+
+        if (event) {
+            event.length = 0
+        }
+    }
+
+    return this;
+};
 
 function emit(eventList, args) {
     var a1, a2, a3, a4,
