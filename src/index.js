@@ -129,7 +129,7 @@ EventEmitter.prototype.removeAllListeners = function() {
         event = events[key];
 
         if (event) {
-            event.length = 0
+            event.length = 0;
         }
     }
 
