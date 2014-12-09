@@ -2,20 +2,16 @@ var type = require("type"),
     utils = require("utils");
 
 
-var arrayShift = Array.prototype.shift,
-    arraySlice = Array.prototype.slice;
-
-
 function EventObject(listener, ctx) {
     this.listener = listener;
     this.ctx = ctx;
 }
 
 
-function EventEmitter() {
+function EventEmitter(maxListeners) {
 
     this._events = {};
-    this._maxListeners = EventEmitter.defaultMaxListeners;
+    this._maxListeners = maxListeners != null ? maxListeners : EventEmitter.defaultMaxListeners;
 }
 
 EventEmitter.prototype.on = function(name, listener, ctx) {
@@ -92,6 +88,7 @@ EventEmitter.prototype.off = function(name, listener, ctx) {
 
     if (!listener) {
         i = eventList.length;
+
         while (i--) {
             event = eventList[i];
             this.emit("removeListener", name, event.listener, event.ctx);
@@ -101,15 +98,19 @@ EventEmitter.prototype.off = function(name, listener, ctx) {
     } else {
         ctx = ctx || this;
         i = eventList.length;
+
         while (i--) {
             event = eventList[i];
 
-            if (event.listener === listener) {
+            if (event.listener === listener && event.ctx === ctx) {
                 this.emit("removeListener", name, event.listener, event.ctx);
                 eventList.splice(i, 1);
             }
         }
-        if (eventList.length === 0) delete events[name];
+
+        if (eventList.length === 0) {
+            delete events[name];
+        }
     }
 
     return this;
@@ -121,20 +122,46 @@ EventEmitter.prototype.removeAllListeners = function() {
     var events = this._events,
         keys = utils.keys(events),
         i = -1,
-        length = keys.length,
-        key, event;
+        il = keys.length - 1,
+        key, eventList, j, event;
 
-    while (i++ < length) {
+    while (i++ < il) {
         key = keys[i];
-        event = events[key];
+        eventList = events[key];
 
-        if (event) {
-            event.length = 0;
+        if (eventList) {
+            j = eventList.length;
+
+            while (j--) {
+                event = eventList[i];
+                this.emit("removeListener", key, event.listener, event.ctx);
+                eventList.splice(j, 1);
+            }
         }
+
+        delete events[key];
     }
 
     return this;
 };
+
+function slice(array, offset) {
+    var length, i, il, result, j;
+
+    offset = offset || 0;
+
+    length = array.length;
+    i = offset - 1;
+    il = length - 1;
+    result = new Array(length - offset);
+    j = 0;
+
+    while (i++ < il) {
+        result[j++] = array[i];
+    }
+
+    return result;
+}
 
 function emit(eventList, args) {
     var a1, a2, a3, a4,
@@ -143,38 +170,37 @@ function emit(eventList, args) {
         i = -1,
         event;
 
-    if (argsLength === 1) {
+    if (argsLength === 0) {
         while (i++ < length) {
             if ((event = eventList[i])) event.listener.call(event.ctx);
         }
-    } else if (argsLength === 2) {
-        a1 = args[1];
+    } else if (argsLength === 1) {
+        a1 = args[0];
         while (i++ < length) {
             if ((event = eventList[i])) event.listener.call(event.ctx, a1);
         }
-    } else if (argsLength === 3) {
-        a1 = args[1];
-        a2 = args[2];
+    } else if (argsLength === 2) {
+        a1 = args[0];
+        a2 = args[1];
         while (i++ < length) {
             if ((event = eventList[i])) event.listener.call(event.ctx, a1, a2);
         }
-    } else if (argsLength === 4) {
-        a1 = args[1];
-        a2 = args[2];
-        a3 = args[3];
+    } else if (argsLength === 3) {
+        a1 = args[0];
+        a2 = args[1];
+        a3 = args[2];
         while (i++ < length) {
             if ((event = eventList[i])) event.listener.call(event.ctx, a1, a2, a3);
         }
-    } else if (argsLength === 5) {
-        a1 = args[1];
-        a2 = args[2];
-        a3 = args[3];
-        a4 = args[4];
+    } else if (argsLength === 4) {
+        a1 = args[0];
+        a2 = args[1];
+        a3 = args[2];
+        a4 = args[3];
         while (i++ < length) {
             if ((event = eventList[i])) event.listener.call(event.ctx, a1, a2, a3, a4);
         }
     } else {
-        arrayShift.apply(args);
         while (i++ < length) {
             if ((event = eventList[i])) event.listener.apply(event.ctx, args);
         }
@@ -185,7 +211,16 @@ EventEmitter.prototype.emit = function(name) {
     var eventList = this._events[name];
 
     if (!eventList || !eventList.length) return this;
-    emit(eventList, arguments);
+    emit(eventList, slice(arguments, 1));
+
+    return this;
+};
+
+EventEmitter.prototype.emitArgs = function(name, args) {
+    var eventList = this._events[name];
+
+    if (!eventList || !eventList.length) return this;
+    emit(eventList, args);
 
     return this;
 };
@@ -194,7 +229,8 @@ function emitAsync(_this, eventList, args, callback) {
     var length = eventList.length,
         index = 0,
         argsLength = args.length,
-        called = false;
+        called = false,
+        event;
 
     (function next(err) {
         if (called === true) {
@@ -213,11 +249,11 @@ function emitAsync(_this, eventList, args, callback) {
     }());
 }
 
-EventEmitter.prototype.emitAsync = function(name, callback) {
+EventEmitter.prototype.emitAsync = function(name, args, callback) {
     var _this = this,
-        eventList = this._events[name],
-        args = arraySlice.call(arguments, 1);
+        eventList = this._events[name];
 
+    args = slice(arguments, 1);
     callback = args.pop();
 
     if (!type.isFunction(callback)) {
@@ -238,7 +274,7 @@ EventEmitter.prototype.emitAsync = function(name, callback) {
 EventEmitter.prototype.listeners = function(name) {
     var eventList = this._events[name];
 
-    return eventList ? eventList.slice() : [];
+    return eventList ? slice(eventList) : [];
 };
 
 EventEmitter.prototype.listenerCount = function(name) {
@@ -267,7 +303,7 @@ EventEmitter.listeners = function(obj, name) {
     }
     eventList = obj._events && obj._events[name];
 
-    return eventList ? eventList.slice() : [];
+    return eventList ? slice(eventList) : [];
 };
 
 EventEmitter.listenerCount = function(obj, name) {

@@ -1,7 +1,8 @@
-global.EventEmitter = require("../src/index.js");
+global.EventEmitter = require("../src/index");
 
 
-var events = new EventEmitter();
+global.events = new EventEmitter(-1);
+
 
 events.on("async-event", function(model, next) {
     setTimeout(function() {
@@ -9,14 +10,14 @@ events.on("async-event", function(model, next) {
         console.timeEnd("name");
         console.time("age");
         next();
-    }, 500);
+    }, 100);
 });
 events.on("async-event", function(model, next) {
     setTimeout(function() {
         model.age = 32;
         console.timeEnd("age");
         next();
-    }, 500);
+    }, 100);
 });
 
 
