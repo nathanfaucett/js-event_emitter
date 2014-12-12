@@ -21,9 +21,9 @@ EventEmitter.prototype.on = function(name, listener, ctx) {
         throw new TypeError("EventEmitter.on(name, listener[, ctx]) listener must be a function");
     }
 
-    events = this._events;
+    events = this._events || (this._events = {});
     eventList = (events[name] || (events[name] = []));
-    maxListeners = this._maxListeners;
+    maxListeners = this._maxListeners || -1;
 
     eventList.push(new EventObject(listener, ctx || this));
 
@@ -78,7 +78,7 @@ EventEmitter.prototype.listenTo = function(obj, name, listener, ctx) {
 };
 
 EventEmitter.prototype.off = function(name, listener, ctx) {
-    var events = this._events,
+    var events = this._events || (this._events = {}),
         eventList, event, i;
 
     if (!name) return this;
@@ -119,7 +119,7 @@ EventEmitter.prototype.off = function(name, listener, ctx) {
 EventEmitter.prototype.removeListener = EventEmitter.prototype.off;
 
 EventEmitter.prototype.removeAllListeners = function() {
-    var events = this._events,
+    var events = this._events || (this._events = {}),
         keys = utils.keys(events),
         i = -1,
         il = keys.length - 1,
@@ -208,7 +208,7 @@ function emit(eventList, args) {
 }
 
 EventEmitter.prototype.emit = function(name) {
-    var eventList = this._events[name];
+    var eventList = (this._events || (this._events = {}))[name];
 
     if (!eventList || !eventList.length) return this;
     emit(eventList, slice(arguments, 1));
@@ -217,7 +217,7 @@ EventEmitter.prototype.emit = function(name) {
 };
 
 EventEmitter.prototype.emitArgs = function(name, args) {
-    var eventList = this._events[name];
+    var eventList = (this._events || (this._events = {}))[name];
 
     if (!eventList || !eventList.length) return this;
     emit(eventList, args);
@@ -251,7 +251,7 @@ function emitAsync(_this, eventList, args, callback) {
 
 EventEmitter.prototype.emitAsync = function(name, args, callback) {
     var _this = this,
-        eventList = this._events[name];
+        eventList = (this._events || (this._events = {}))[name];
 
     args = slice(arguments, 1);
     callback = args.pop();
@@ -272,13 +272,13 @@ EventEmitter.prototype.emitAsync = function(name, args, callback) {
 };
 
 EventEmitter.prototype.listeners = function(name) {
-    var eventList = this._events[name];
+    var eventList = (this._events || (this._events = {}))[name];
 
     return eventList ? slice(eventList) : [];
 };
 
 EventEmitter.prototype.listenerCount = function(name) {
-    var eventList = this._events[name];
+    var eventList = (this._events || (this._events = {}))[name];
 
     return eventList ? eventList.length : 0;
 };
