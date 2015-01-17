@@ -23,8 +23,7 @@
     "fast_slice": "nathanfaucett/fast_slice",
     "is_function": "nathanfaucett/is_function",
     "inherits": "nathanfaucett/inherits",
-    "keys": "nathanfaucett/keys",
-    "event_emitter": "nathanfaucett/event_emitter"
+    "keys": "nathanfaucett/keys"
   }
 }
 
