@@ -1,5 +1,7 @@
-var type = require("type"),
-    utils = require("utils");
+var isFunction = require("is_function"),
+    inherits = require("inherits"),
+    fastSlice = require("fast_slice"),
+    keys = require("keys");
 
 
 function EventEmitter(maxListeners) {
@@ -11,7 +13,7 @@ function EventEmitter(maxListeners) {
 EventEmitter.prototype.on = function(name, listener) {
     var events, eventList, maxListeners;
 
-    if (!type.isFunction(listener)) {
+    if (!isFunction(listener)) {
         throw new TypeError("EventEmitter.on(name, listener) listener must be a function");
     }
 
@@ -19,7 +21,7 @@ EventEmitter.prototype.on = function(name, listener) {
     eventList = (events[name] || (events[name] = []));
     maxListeners = this.__maxListeners || -1;
 
-    eventList.push(listener);
+    eventList[eventList.length] = listener;
 
     if (maxListeners !== -1 && eventList.length > maxListeners) {
         console.error("EventEmitter.on(type, listener) possible EventEmitter memory leak detected. " + maxListeners + " listeners added");
@@ -48,8 +50,6 @@ EventEmitter.prototype.once = function(name, listener) {
             return listener(arguments[0], arguments[1], arguments[2]);
         } else if (length === 4) {
             return listener(arguments[0], arguments[1], arguments[2], arguments[3]);
-        } else if (length === 5) {
-            return listener(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4]);
         } else {
             return listener.apply(null, arguments);
         }
@@ -117,13 +117,13 @@ EventEmitter.prototype.removeListener = EventEmitter.prototype.off;
 
 EventEmitter.prototype.removeAllListeners = function() {
     var events = this.__events || (this.__events = {}),
-        keys = utils.keys(events),
+        objectKeys = keys(events),
         i = -1,
-        il = keys.length - 1,
+        il = objectKeys.length - 1,
         key, eventList, j;
 
     while (i++ < il) {
-        key = keys[i];
+        key = objectKeys[i];
         eventList = events[key];
 
         if (eventList) {
@@ -140,24 +140,6 @@ EventEmitter.prototype.removeAllListeners = function() {
 
     return this;
 };
-
-function slice(array, offset) {
-    var length, i, il, result, j;
-
-    offset = offset || 0;
-
-    length = array.length;
-    i = offset - 1;
-    il = length - 1;
-    result = new Array(length - offset);
-    j = 0;
-
-    while (i++ < il) {
-        result[j++] = array[i];
-    }
-
-    return result;
-}
 
 function emit(eventList, args) {
     var a1, a2, a3, a4,
@@ -210,7 +192,7 @@ EventEmitter.prototype.emit = function(name) {
         return this;
     }
 
-    emit(eventList, slice(arguments, 1));
+    emit(eventList, fastSlice(arguments, 1));
 
     return this;
 };
@@ -253,10 +235,10 @@ function emitAsync(eventList, args, callback) {
 EventEmitter.prototype.emitAsync = function(name, args, callback) {
     var eventList = (this.__events || (this.__events = {}))[name];
 
-    args = slice(arguments, 1);
+    args = fastSlice(arguments, 1);
     callback = args.pop();
 
-    if (!type.isFunction(callback)) {
+    if (!isFunction(callback)) {
         throw new TypeError("EventEmitter.emitAsync(name [, ...args], callback) callback must be a function");
     }
 
@@ -272,7 +254,7 @@ EventEmitter.prototype.emitAsync = function(name, args, callback) {
 EventEmitter.prototype.listeners = function(name) {
     var eventList = (this.__events || (this.__events = {}))[name];
 
-    return eventList ? slice(eventList) : [];
+    return eventList ? fastSlice(eventList) : [];
 };
 
 EventEmitter.prototype.listenerCount = function(name) {
@@ -301,7 +283,7 @@ EventEmitter.listeners = function(obj, name) {
     }
     eventList = obj.__events && obj.__events[name];
 
-    return eventList ? slice(eventList) : [];
+    return eventList ? fastSlice(eventList) : [];
 };
 
 EventEmitter.listenerCount = function(obj, name) {
@@ -326,7 +308,7 @@ EventEmitter.setMaxListeners = function(value) {
 
 EventEmitter.extend = function(child) {
 
-    utils.inherits(child, this);
+    inherits(child, this);
     child.extend = this.extend;
 
     return child;
