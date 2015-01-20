@@ -143,45 +143,51 @@ EventEmitter.prototype.removeAllListeners = function() {
 
 function emit(eventList, args) {
     var a1, a2, a3, a4,
-        argsLength = args.length,
         length = eventList.length - 1,
         i = -1,
         event;
 
-    if (argsLength === 0) {
-        while (i++ < length) {
-            (event = eventList[i]) && event();
-        }
-    } else if (argsLength === 1) {
-        a1 = args[0];
-        while (i++ < length) {
-            (event = eventList[i]) && event(a1);
-        }
-    } else if (argsLength === 2) {
-        a1 = args[0];
-        a2 = args[1];
-        while (i++ < length) {
-            (event = eventList[i]) && event(a1, a2);
-        }
-    } else if (argsLength === 3) {
-        a1 = args[0];
-        a2 = args[1];
-        a3 = args[2];
-        while (i++ < length) {
-            (event = eventList[i]) && event(a1, a2, a3);
-        }
-    } else if (argsLength === 4) {
-        a1 = args[0];
-        a2 = args[1];
-        a3 = args[2];
-        a4 = args[3];
-        while (i++ < length) {
-            (event = eventList[i]) && event(a1, a2, a3, a4);
-        }
-    } else {
-        while (i++ < length) {
-            (event = eventList[i]) && event.apply(null, args);
-        }
+    switch (args.length) {
+        case 0:
+            while (i++ < length) {
+                (event = eventList[i]) && event();
+            }
+            break;
+        case 1:
+            a1 = args[0];
+            while (i++ < length) {
+                (event = eventList[i]) && event(a1);
+            }
+            break;
+        case 2:
+            a1 = args[0];
+            a2 = args[1];
+            while (i++ < length) {
+                (event = eventList[i]) && event(a1, a2);
+            }
+            break;
+        case 3:
+            a1 = args[0];
+            a2 = args[1];
+            a3 = args[2];
+            while (i++ < length) {
+                (event = eventList[i]) && event(a1, a2, a3);
+            }
+            break;
+        case 4:
+            a1 = args[0];
+            a2 = args[1];
+            a3 = args[2];
+            a4 = args[3];
+            while (i++ < length) {
+                (event = eventList[i]) && event(a1, a2, a3, a4);
+            }
+            break;
+        default:
+            while (i++ < length) {
+                (event = eventList[i]) && event.apply(null, args);
+            }
+            break;
     }
 }
 
