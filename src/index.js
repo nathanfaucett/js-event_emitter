@@ -218,14 +218,13 @@ EventEmitter.prototype.emitArgs = function(name, args) {
 function emitAsync(eventList, args, callback) {
     var length = eventList.length,
         index = 0,
-        argsLength = args.length,
         called = false;
 
     function next(err) {
         if (called === true) {
             return;
         }
-        if (index === length || err) {
+        if (err || index === length) {
             called = true;
             callback(err);
             return;
@@ -234,7 +233,7 @@ function emitAsync(eventList, args, callback) {
         eventList[index++].apply(null, args);
     }
 
-    args[argsLength] = next;
+    args[args.length] = next;
     next();
 }
 
