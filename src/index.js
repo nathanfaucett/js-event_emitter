@@ -24,7 +24,9 @@ EventEmitter.prototype.on = function(name, listener) {
     eventList[eventList.length] = listener;
 
     if (maxListeners !== -1 && eventList.length > maxListeners) {
-        console.error("EventEmitter.on(type, listener) possible EventEmitter memory leak detected. " + maxListeners + " listeners added");
+        console.error(
+            "EventEmitter.on(type, listener) possible EventEmitter memory leak detected. " + maxListeners + " listeners added"
+        );
     }
 
     return this;
@@ -63,7 +65,7 @@ EventEmitter.prototype.once = function(name, listener) {
 EventEmitter.prototype.listenTo = function(obj, name) {
     var _this = this;
 
-    if (!(type.isFunction(obj.on) || type.isFunction(obj.addListener))) {
+    if (!obj || !(isFunction(obj.on) || isFunction(obj.addListener))) {
         throw new TypeError("EventEmitter.listenTo(obj, name) obj must have a on function taking (name, listener[, ctx])");
     }
 
@@ -150,20 +152,26 @@ function emit(eventList, args) {
     switch (args.length) {
         case 0:
             while (i++ < length) {
-                (event = eventList[i]) && event();
+                if ((event = eventList[i])) {
+                    event();
+                }
             }
             break;
         case 1:
             a1 = args[0];
             while (i++ < length) {
-                (event = eventList[i]) && event(a1);
+                if ((event = eventList[i])) {
+                    event(a1);
+                }
             }
             break;
         case 2:
             a1 = args[0];
             a2 = args[1];
             while (i++ < length) {
-                (event = eventList[i]) && event(a1, a2);
+                if ((event = eventList[i])) {
+                    event(a1, a2);
+                }
             }
             break;
         case 3:
@@ -171,7 +179,9 @@ function emit(eventList, args) {
             a2 = args[1];
             a3 = args[2];
             while (i++ < length) {
-                (event = eventList[i]) && event(a1, a2, a3);
+                if ((event = eventList[i])) {
+                    event(a1, a2, a3);
+                }
             }
             break;
         case 4:
@@ -180,12 +190,16 @@ function emit(eventList, args) {
             a3 = args[2];
             a4 = args[3];
             while (i++ < length) {
-                (event = eventList[i]) && event(a1, a2, a3, a4);
+                if ((event = eventList[i])) {
+                    event(a1, a2, a3, a4);
+                }
             }
             break;
         default:
             while (i++ < length) {
-                (event = eventList[i]) && event.apply(null, args);
+                if ((event = eventList[i])) {
+                    event.apply(null, args);
+                }
             }
             break;
     }
@@ -221,16 +235,14 @@ function emitAsync(eventList, args, callback) {
         called = false;
 
     function next(err) {
-        if (called === true) {
-            return;
+        if (called !== true) {
+            if (err || index === length) {
+                called = true;
+                callback(err);
+            } else {
+                eventList[index++].apply(null, args);
+            }
         }
-        if (err || index === length) {
-            called = true;
-            callback(err);
-            return;
-        }
-
-        eventList[index++].apply(null, args);
     }
 
     args[args.length] = next;
