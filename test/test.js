@@ -3,6 +3,21 @@ var assert = require("assert"),
 
 
 describe("EventEmitter", function() {
+    describe("#extend(ChildConstructor)", function() {
+        it("should make ChildConstructor inherit EventEmitter", function() {
+            function Child() {
+                EventEmitter.call(this);
+            }
+            EventEmitter.extend(Child);
+
+            assert(Child.prototype instanceof EventEmitter);
+            assert(Child.prototype.constructor === Child);
+            assert(Child.extend === EventEmitter.extend);
+            assert(Child.super_ === EventEmitter);
+            assert(Child.__super === EventEmitter.prototype);
+        });
+    });
+
     describe("#on(name, listener)", function() {
         it("should add event named name to emitters listeners", function() {
             var ee = new EventEmitter(),

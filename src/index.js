@@ -1,11 +1,11 @@
 var isFunction = require("is_function"),
     inherits = require("inherits"),
     fastSlice = require("fast_slice"),
+    defineProperty = require("define_property"),
     keys = require("keys");
 
 
 function EventEmitter(maxListeners) {
-
     this.__events = {};
     this.__maxListeners = maxListeners != null ? maxListeners : EventEmitter.defaultMaxListeners;
 }
@@ -205,18 +205,6 @@ function emit(eventList, args) {
     }
 }
 
-EventEmitter.prototype.emit = function(name) {
-    var eventList = (this.__events || (this.__events = {}))[name];
-
-    if (!eventList || !eventList.length) {
-        return this;
-    }
-
-    emit(eventList, fastSlice(arguments, 1));
-
-    return this;
-};
-
 EventEmitter.prototype.emitArgs = function(name, args) {
     var eventList = (this.__events || (this.__events = {}))[name];
 
@@ -227,6 +215,10 @@ EventEmitter.prototype.emitArgs = function(name, args) {
     emit(eventList, args);
 
     return this;
+};
+
+EventEmitter.prototype.emit = function(name) {
+    return this.emitArgs(name, fastSlice(arguments, 1));
 };
 
 function emitAsync(eventList, args, callback) {
@@ -271,7 +263,7 @@ EventEmitter.prototype.emitAsync = function(name, args, callback) {
 EventEmitter.prototype.listeners = function(name) {
     var eventList = (this.__events || (this.__events = {}))[name];
 
-    return eventList ? fastSlice(eventList) : [];
+    return eventList ? eventList.slice() : [];
 };
 
 EventEmitter.prototype.listenerCount = function(name) {
@@ -290,9 +282,10 @@ EventEmitter.prototype.setMaxListeners = function(value) {
 };
 
 
-EventEmitter.defaultMaxListeners = 10;
+defineConstructorProperty(EventEmitter, "defaultMaxListeners", 10);
 
-EventEmitter.listeners = function(obj, name) {
+
+defineConstructorProperty(EventEmitter, "listeners", function(obj, name) {
     var eventList;
 
     if (obj == null) {
@@ -300,10 +293,10 @@ EventEmitter.listeners = function(obj, name) {
     }
     eventList = obj.__events && obj.__events[name];
 
-    return eventList ? fastSlice(eventList) : [];
-};
+    return eventList ? eventList.slice() : [];
+});
 
-EventEmitter.listenerCount = function(obj, name) {
+defineConstructorProperty(EventEmitter, "listenerCount", function(obj, name) {
     var eventList;
 
     if (obj == null) {
@@ -312,24 +305,31 @@ EventEmitter.listenerCount = function(obj, name) {
     eventList = obj.__events && obj.__events[name];
 
     return eventList ? eventList.length : 0;
-};
+});
 
-EventEmitter.setMaxListeners = function(value) {
+defineConstructorProperty(EventEmitter, "setMaxListeners", function(value) {
     if ((value = +value) !== value) {
         throw new TypeError("EventEmitter.setMaxListeners(value) value must be a number");
     }
 
     EventEmitter.defaultMaxListeners = value < 0 ? -1 : value;
     return value;
-};
+});
 
 EventEmitter.extend = function(child) {
-
     inherits(child, this);
-    child.extend = this.extend;
-
     return child;
 };
+
+
+function defineConstructorProperty(object, name, value) {
+    defineProperty(object, name, {
+        configurable: true,
+        enumerable: false,
+        writable: true,
+        value: value
+    });
+}
 
 
 module.exports = EventEmitter;
