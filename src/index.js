@@ -38,22 +38,22 @@ EventEmitter.prototype.once = function(name, listener) {
     var _this = this;
 
     function once() {
-        var length = arguments.length;
 
         _this.off(name, once);
 
-        if (length === 0) {
-            return listener();
-        } else if (length === 1) {
-            return listener(arguments[0]);
-        } else if (length === 2) {
-            return listener(arguments[0], arguments[1]);
-        } else if (length === 3) {
-            return listener(arguments[0], arguments[1], arguments[2]);
-        } else if (length === 4) {
-            return listener(arguments[0], arguments[1], arguments[2], arguments[3]);
-        } else {
-            return listener.apply(null, arguments);
+        switch (arguments.length) {
+            case 0:
+                return listener();
+            case 1:
+                return listener(arguments[0]);
+            case 2:
+                return listener(arguments[0], arguments[1]);
+            case 3:
+                return listener(arguments[0], arguments[1], arguments[2]);
+            case 4:
+                return listener(arguments[0], arguments[1], arguments[2], arguments[3]);
+            default:
+                return listener.apply(null, arguments);
         }
     }
 
@@ -144,7 +144,7 @@ EventEmitter.prototype.removeAllListeners = function() {
 };
 
 function emit(eventList, args) {
-    var a1, a2, a3, a4,
+    var a1, a2, a3, a4, a5,
         length = eventList.length - 1,
         i = -1,
         event;
@@ -195,6 +195,18 @@ function emit(eventList, args) {
                 }
             }
             break;
+        case 5:
+            a1 = args[0];
+            a2 = args[1];
+            a3 = args[2];
+            a4 = args[3];
+            a5 = args[4];
+            while (i++ < length) {
+                if ((event = eventList[i])) {
+                    event(a1, a2, a3, a4, a5);
+                }
+            }
+            break;
         default:
             while (i++ < length) {
                 if ((event = eventList[i])) {
@@ -221,10 +233,44 @@ EventEmitter.prototype.emit = function(name) {
     return this.emitArgs(name, fastSlice(arguments, 1));
 };
 
+function createFunctionCaller(args) {
+    switch (args.length) {
+        case 0:
+            return function functionCaller(fn) {
+                return fn();
+            };
+        case 1:
+            return function functionCaller(fn) {
+                return fn(args[0]);
+            };
+        case 2:
+            return function functionCaller(fn) {
+                return fn(args[0], args[1]);
+            };
+        case 3:
+            return function functionCaller(fn) {
+                return fn(args[0], args[1], args[2]);
+            };
+        case 4:
+            return function functionCaller(fn) {
+                return fn(args[0], args[1], args[2], args[3]);
+            };
+        case 5:
+            return function functionCaller(fn) {
+                return fn(args[0], args[1], args[2], args[3], args[4]);
+            };
+        default:
+            return function functionCaller(fn) {
+                return fn.apply(null, args);
+            };
+    }
+}
+
 function emitAsync(eventList, args, callback) {
     var length = eventList.length,
         index = 0,
-        called = false;
+        called = false,
+        functionCaller;
 
     function next(err) {
         if (called !== true) {
@@ -232,12 +278,13 @@ function emitAsync(eventList, args, callback) {
                 called = true;
                 callback(err);
             } else {
-                eventList[index++].apply(null, args);
+                functionCaller(eventList[index++]);
             }
         }
     }
 
     args[args.length] = next;
+    functionCaller = createFunctionCaller(args);
     next();
 }
 

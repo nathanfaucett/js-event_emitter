@@ -89,4 +89,18 @@ describe("EventEmitter", function() {
             assert.equal(called1, false);
         });
     });
+
+    describe("#listenTo(object, name)", function() {
+        it("should attach listen to objects event name, and emit from this emitter", function() {
+            var ee1 = new EventEmitter(),
+                ee2 = new EventEmitter();
+
+            ee1.on("test", function(value) {
+                assert.equal(value, 1);
+            });
+
+            ee1.listenTo(ee2, "test");
+            ee2.emit("test", 1);
+        });
+    });
 });
