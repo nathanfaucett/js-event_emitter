@@ -22,7 +22,6 @@
   },
   "dependencies": {
     "fast_slice": "nathanfaucett/fast_slice",
-    "define_property": "nathanfaucett/define_property",
     "is_function": "nathanfaucett/is_function",
     "inherits": "nathanfaucett/inherits",
     "keys": "nathanfaucett/keys"

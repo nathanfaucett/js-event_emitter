@@ -1,7 +1,6 @@
 var isFunction = require("is_function"),
     inherits = require("inherits"),
     fastSlice = require("fast_slice"),
-    defineProperty = require("define_property"),
     keys = require("keys");
 
 
@@ -329,10 +328,10 @@ EventEmitter.prototype.setMaxListeners = function(value) {
 };
 
 
-defineConstructorProperty(EventEmitter, "defaultMaxListeners", 10);
+inherits.defineProperty(EventEmitter, "defaultMaxListeners", 10);
 
 
-defineConstructorProperty(EventEmitter, "listeners", function(obj, name) {
+inherits.defineProperty(EventEmitter, "listeners", function(obj, name) {
     var eventList;
 
     if (obj == null) {
@@ -343,7 +342,7 @@ defineConstructorProperty(EventEmitter, "listeners", function(obj, name) {
     return eventList ? eventList.slice() : [];
 });
 
-defineConstructorProperty(EventEmitter, "listenerCount", function(obj, name) {
+inherits.defineProperty(EventEmitter, "listenerCount", function(obj, name) {
     var eventList;
 
     if (obj == null) {
@@ -354,7 +353,7 @@ defineConstructorProperty(EventEmitter, "listenerCount", function(obj, name) {
     return eventList ? eventList.length : 0;
 });
 
-defineConstructorProperty(EventEmitter, "setMaxListeners", function(value) {
+inherits.defineProperty(EventEmitter, "setMaxListeners", function(value) {
     if ((value = +value) !== value) {
         throw new TypeError("EventEmitter.setMaxListeners(value) value must be a number");
     }
@@ -367,16 +366,6 @@ EventEmitter.extend = function(child) {
     inherits(child, this);
     return child;
 };
-
-
-function defineConstructorProperty(object, name, value) {
-    defineProperty(object, name, {
-        configurable: true,
-        enumerable: false,
-        writable: true,
-        value: value
-    });
-}
 
 
 module.exports = EventEmitter;
