@@ -7,6 +7,12 @@
     "url": "https://github.com/nathanfaucett/event_emitter.git"
   },
   "main": "src/index.js",
+  "scripts": {
+    "test": "npm run test-node",
+    "test-node": "node ./test | ./node_modules/.bin/tap-spec",
+    "test-node-raw": "node ./test",
+    "test-browser-local": "zuul --local 8080 --ui tape -- ./test"
+  },
   "keywords": [
     "event_emitter",
     "event_emitter.js"
@@ -18,12 +24,14 @@
     "grunt": "",
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-jsbeautifier": "",
-    "mocha": "^2.1.0"
+    "tap-spec": "^4.0.2",
+    "tape": "^4.0.1",
+    "zuul": "^3.2.0"
   },
   "dependencies": {
-    "fast_slice": "nathanfaucett/fast_slice",
-    "is_function": "nathanfaucett/is_function",
-    "inherits": "nathanfaucett/inherits",
-    "keys": "nathanfaucett/keys"
+    "fast_slice": "git://github.com/nathanfaucett/fast_slice.git",
+    "is_function": "git://github.com/nathanfaucett/is_function.git",
+    "inherits": "git://github.com/nathanfaucett/inherits.git",
+    "keys": "git://github.com/nathanfaucett/keys.git"
   }
 }
