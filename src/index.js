@@ -4,12 +4,19 @@ var isFunction = require("is_function"),
     keys = require("keys");
 
 
+var EventEmitterPrototype;
+
+
+module.exports = EventEmitter;
+
+
 function EventEmitter(maxListeners) {
     this.__events = {};
     this.__maxListeners = maxListeners != null ? maxListeners : EventEmitter.defaultMaxListeners;
 }
+EventEmitterPrototype = EventEmitter.prototype;
 
-EventEmitter.prototype.on = function(name, listener) {
+EventEmitterPrototype.on = function(name, listener) {
     var events, eventList, maxListeners;
 
     if (!isFunction(listener)) {
@@ -31,9 +38,9 @@ EventEmitter.prototype.on = function(name, listener) {
     return this;
 };
 
-EventEmitter.prototype.addEventListener = EventEmitter.prototype.addListener = EventEmitter.prototype.on;
+EventEmitterPrototype.addEventListener = EventEmitterPrototype.addListener = EventEmitterPrototype.on;
 
-EventEmitter.prototype.once = function(name, listener) {
+EventEmitterPrototype.once = function(name, listener) {
     var _this = this;
 
     function once() {
@@ -61,7 +68,7 @@ EventEmitter.prototype.once = function(name, listener) {
     return once;
 };
 
-EventEmitter.prototype.listenTo = function(value, name) {
+EventEmitterPrototype.listenTo = function(value, name) {
     var _this = this;
 
     if (!value || !(isFunction(value.on) || isFunction(value.addListener))) {
@@ -77,7 +84,7 @@ EventEmitter.prototype.listenTo = function(value, name) {
     return handler;
 };
 
-EventEmitter.prototype.off = function(name, listener) {
+EventEmitterPrototype.off = function(name, listener) {
     var events = this.__events || (this.__events = {}),
         eventList, event, i;
 
@@ -114,9 +121,9 @@ EventEmitter.prototype.off = function(name, listener) {
     return this;
 };
 
-EventEmitter.prototype.removeEventListener = EventEmitter.prototype.removeListener = EventEmitter.prototype.off;
+EventEmitterPrototype.removeEventListener = EventEmitterPrototype.removeListener = EventEmitterPrototype.off;
 
-EventEmitter.prototype.removeAllListeners = function() {
+EventEmitterPrototype.removeAllListeners = function() {
     var events = this.__events || (this.__events = {}),
         objectKeys = keys(events),
         i = -1,
@@ -216,7 +223,7 @@ function emit(eventList, args) {
     }
 }
 
-EventEmitter.prototype.emitArgs = function(name, args) {
+EventEmitterPrototype.emitArgs = function(name, args) {
     var eventList = (this.__events || (this.__events = {}))[name];
 
     if (!eventList || !eventList.length) {
@@ -228,7 +235,7 @@ EventEmitter.prototype.emitArgs = function(name, args) {
     return this;
 };
 
-EventEmitter.prototype.emit = function(name) {
+EventEmitterPrototype.emit = function(name) {
     return this.emitArgs(name, fastSlice(arguments, 1));
 };
 
@@ -287,7 +294,7 @@ function emitAsync(eventList, args, callback) {
     next();
 }
 
-EventEmitter.prototype.emitAsync = function(name, args, callback) {
+EventEmitterPrototype.emitAsync = function(name, args, callback) {
     var eventList = (this.__events || (this.__events = {}))[name];
 
     args = fastSlice(arguments, 1);
@@ -306,19 +313,19 @@ EventEmitter.prototype.emitAsync = function(name, args, callback) {
     return this;
 };
 
-EventEmitter.prototype.listeners = function(name) {
+EventEmitterPrototype.listeners = function(name) {
     var eventList = (this.__events || (this.__events = {}))[name];
 
     return eventList ? eventList.slice() : [];
 };
 
-EventEmitter.prototype.listenerCount = function(name) {
+EventEmitterPrototype.listenerCount = function(name) {
     var eventList = (this.__events || (this.__events = {}))[name];
 
     return eventList ? eventList.length : 0;
 };
 
-EventEmitter.prototype.setMaxListeners = function(value) {
+EventEmitterPrototype.setMaxListeners = function(value) {
     if ((value = +value) !== value) {
         throw new TypeError("EventEmitter.setMaxListeners(value) value must be a number");
     }
@@ -327,9 +334,7 @@ EventEmitter.prototype.setMaxListeners = function(value) {
     return this;
 };
 
-
 inherits.defineProperty(EventEmitter, "defaultMaxListeners", 10);
-
 
 inherits.defineProperty(EventEmitter, "listeners", function(value, name) {
     var eventList;
@@ -366,6 +371,3 @@ EventEmitter.extend = function(child) {
     inherits(child, this);
     return child;
 };
-
-
-module.exports = EventEmitter;
