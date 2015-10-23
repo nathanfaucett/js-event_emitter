@@ -1,7 +1,8 @@
 var isFunction = require("is_function"),
     inherits = require("inherits"),
     fastSlice = require("fast_slice"),
-    keys = require("keys");
+    keys = require("keys"),
+    isNullOrUndefined = require("is_null_or_undefined");
 
 
 var EventEmitterPrototype;
@@ -12,7 +13,7 @@ module.exports = EventEmitter;
 
 function EventEmitter(maxListeners) {
     this.__events = {};
-    this.__maxListeners = maxListeners != null ? maxListeners : EventEmitter.defaultMaxListeners;
+    this.__maxListeners = isNullOrUndefined(maxListeners) ? +maxListeners : EventEmitter.defaultMaxListeners;
 }
 EventEmitterPrototype = EventEmitter.prototype;
 
@@ -315,13 +316,11 @@ EventEmitterPrototype.emitAsync = function(name, args, callback) {
 
 EventEmitterPrototype.listeners = function(name) {
     var eventList = (this.__events || (this.__events = {}))[name];
-
     return eventList ? eventList.slice() : [];
 };
 
 EventEmitterPrototype.listenerCount = function(name) {
     var eventList = (this.__events || (this.__events = {}))[name];
-
     return eventList ? eventList.length : 0;
 };
 
@@ -339,7 +338,7 @@ inherits.defineProperty(EventEmitter, "defaultMaxListeners", 10);
 inherits.defineProperty(EventEmitter, "listeners", function(value, name) {
     var eventList;
 
-    if (value == null) {
+    if (isNullOrUndefined(value)) {
         throw new TypeError("EventEmitter.listeners(value, name) value required");
     }
     eventList = value.__events && value.__events[name];
@@ -350,7 +349,7 @@ inherits.defineProperty(EventEmitter, "listeners", function(value, name) {
 inherits.defineProperty(EventEmitter, "listenerCount", function(value, name) {
     var eventList;
 
-    if (value == null) {
+    if (isNullOrUndefined(value)) {
         throw new TypeError("EventEmitter.listenerCount(value, name) value required");
     }
     eventList = value.__events && value.__events[name];

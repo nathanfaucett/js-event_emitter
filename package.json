@@ -21,14 +21,15 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "grunt": "",
-    "grunt-contrib-jshint": "^0.10.0",
-    "grunt-jsbeautifier": "",
-    "tap-spec": "^4.0.2",
-    "tape": "^4.0.1",
-    "zuul": "^3.2.0"
+    "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^0.11.3",
+    "grunt-jsbeautifier": "^0.2.10",
+    "tap-spec": "^4.1.0",
+    "tape": "^4.2.0",
+    "zuul": "^3.6.0"
   },
   "dependencies": {
+    "is_null_or_undefined": "git://github.com/nathanfaucett/is_null_or_undefined.git",
     "fast_slice": "git://github.com/nathanfaucett/fast_slice.git",
     "is_function": "git://github.com/nathanfaucett/is_function.git",
     "inherits": "git://github.com/nathanfaucett/inherits.git",
