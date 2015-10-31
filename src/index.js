@@ -2,6 +2,7 @@ var isFunction = require("is_function"),
     inherits = require("inherits"),
     fastSlice = require("fast_slice"),
     keys = require("keys"),
+    isNumber = require("is_number"),
     isNullOrUndefined = require("is_null_or_undefined");
 
 
@@ -13,7 +14,7 @@ module.exports = EventEmitter;
 
 function EventEmitter(maxListeners) {
     this.__events = {};
-    this.__maxListeners = isNullOrUndefined(maxListeners) ? +maxListeners : EventEmitter.defaultMaxListeners;
+    this.__maxListeners = isNumber(maxListeners) ? +maxListeners : EventEmitter.defaultMaxListeners;
 }
 EventEmitterPrototype = EventEmitter.prototype;
 
