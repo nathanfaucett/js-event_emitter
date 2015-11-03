@@ -81,12 +81,11 @@ tape("EventEmitter emitAsync(name, ...args, callback) should call all listeners 
         assert.equal(err, undefined);
         assert.equal(called0, true);
         assert.equal(called1, true);
+        assert.end();
     });
 
     assert.equal(called0, false);
     assert.equal(called1, false);
-
-    assert.end();
 });
 
 tape("EventEmitter listenTo(object, name) should attach listen to objects event name, and emit from this emitter", function(assert) {
@@ -95,10 +94,9 @@ tape("EventEmitter listenTo(object, name) should attach listen to objects event 
 
     ee1.on("test", function(value) {
         assert.equal(value, 1);
+        assert.end();
     });
 
     ee1.listenTo(ee2, "test");
     ee2.emit("test", 1);
-
-    assert.end();
 });
