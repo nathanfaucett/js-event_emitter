@@ -1,5 +1,5 @@
 {
-  "name": "event_emitter",
+  "name": "@nathanfaucett/event_emitter",
   "version": "0.0.1",
   "description": "EventEmitter for the browser and node.js",
   "repository": {
@@ -11,7 +11,7 @@
     "test": "npm run test-node",
     "test-node": "node ./test | ./node_modules/.bin/tap-spec",
     "test-node-raw": "node ./test",
-    "test-browser-local": "zuul --local 8080 --ui tape -- ./test"
+    "test-browser-local": "zuul --local 9999 --ui tape -- ./test"
   },
   "keywords": [
     "event_emitter",
@@ -21,19 +21,19 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-contrib-jshint": "^0.11.3",
-    "grunt-jsbeautifier": "^0.2.10",
+    "grunt": "^1.0.1",
+    "grunt-contrib-jshint": "^1.0.0",
+    "grunt-jsbeautifier": "^0.2.13",
     "tap-spec": "^4.1.0",
     "tape": "^4.2.2",
     "zuul": "^3.7.2"
   },
   "dependencies": {
-    "fast_slice": "git://github.com/nathanfaucett/fast_slice.git",
-    "inherits": "git://github.com/nathanfaucett/inherits.git",
-    "is_function": "git://github.com/nathanfaucett/is_function.git",
-    "is_null_or_undefined": "git://github.com/nathanfaucett/is_null_or_undefined.git",
-    "is_number": "git://github.com/nathanfaucett/is_number.git",
-    "keys": "git://github.com/nathanfaucett/keys.git"
+    "@nathanfaucett/fast_slice": "^0.0.1",
+    "@nathanfaucett/inherits": "^0.0.1",
+    "@nathanfaucett/is_function": "^0.0.1",
+    "@nathanfaucett/is_null_or_undefined": "^0.0.1",
+    "@nathanfaucett/is_number": "^0.0.1",
+    "@nathanfaucett/keys": "^0.0.1"
   }
 }

@@ -1,9 +1,9 @@
-var isFunction = require("is_function"),
-    inherits = require("inherits"),
-    fastSlice = require("fast_slice"),
-    keys = require("keys"),
-    isNumber = require("is_number"),
-    isNullOrUndefined = require("is_null_or_undefined");
+var isFunction = require("@nathanfaucett/is_function"),
+    inherits = require("@nathanfaucett/inherits"),
+    fastSlice = require("@nathanfaucett/fast_slice"),
+    keys = require("@nathanfaucett/keys"),
+    isNumber = require("@nathanfaucett/is_number"),
+    isNullOrUndefined = require("@nathanfaucett/is_null_or_undefined");
 
 
 var EventEmitterPrototype;
