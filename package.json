@@ -1,6 +1,6 @@
 {
   "name": "@nathanfaucett/event_emitter",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "EventEmitter for the browser and node.js",
   "repository": {
     "type": "git",
@@ -30,10 +30,10 @@
   },
   "dependencies": {
     "@nathanfaucett/fast_slice": "^0.0.1",
-    "@nathanfaucett/inherits": "^0.0.2",
+    "@nathanfaucett/inherits": "^0.0.3",
     "@nathanfaucett/is_function": "^0.0.1",
     "@nathanfaucett/is_null_or_undefined": "^0.0.1",
     "@nathanfaucett/is_number": "^0.0.1",
-    "@nathanfaucett/keys": "^0.0.1"
+    "@nathanfaucett/keys": "^0.0.2"
   }
 }
